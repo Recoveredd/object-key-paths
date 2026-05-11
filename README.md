@@ -6,6 +6,8 @@ List nested key paths from JavaScript objects and arrays.
 
 `object-key-paths` is a small TypeScript utility for JSON tooling, admin dashboards, docs generators, table builders, import/export mapping and schema inspection. It is a modern, typed alternative to older deep key listing packages.
 
+Use it when you need to inspect an unknown object shape, build a field picker, generate table columns, document API payloads or collect all leaf values from a JSON-like object.
+
 ## Package quality
 
 - TypeScript types are generated from the source.
@@ -43,11 +45,24 @@ getLeafPaths(data);
 
 getPathEntries(data);
 // [
-//   { path: 'user', segments: ['user'], value: { ... }, depth: 1, isLeaf: false },
-//   { path: 'user.name', segments: ['user', 'name'], value: 'Ada', depth: 2, isLeaf: true },
+//   { path: 'user', segments: ['user'], value: { ... }, depth: 1, isLeaf: false, isCircular: false },
+//   { path: 'user.name', segments: ['user', 'name'], value: 'Ada', depth: 2, isLeaf: true, isCircular: false },
 //   ...
 // ]
 ```
+
+## Which function should I use?
+
+| Function | Use it when you need |
+| --- | --- |
+| `getKeyPaths` | formatted paths for every reachable container and leaf |
+| `getLeafPaths` | formatted paths only for final values |
+| `getKeySegments` | raw path segments such as `['users', 0, 'name']` |
+| `getPathEntries` | paths plus values, depth and leaf/circular metadata |
+| `formatDotPath` | to format your own segment array as `user.name` |
+| `formatBracketPath` | to format your own segment array as `users[0].name` |
+
+If keys may contain dots, prefer `pathStyle: 'bracket'` or `getKeySegments`. Dot paths are compact and readable, but dotted keys must be escaped.
 
 ## API
 
@@ -127,6 +142,8 @@ formatBracketPath(['users', 0, 'full.name']);
 
 ## Options
 
+Defaults are intentionally broad: plain objects and arrays are traversed, intermediate containers and leaves are included, and circular references are reported as leaves instead of followed.
+
 ```ts
 interface KeyPathOptions {
   includeIntermediate?: boolean;
@@ -141,6 +158,18 @@ interface KeyPathOptions {
 }
 ```
 
+| Option | Default | Meaning |
+| --- | --- | --- |
+| `includeIntermediate` | `true` | include containers like `user` and `user.address` |
+| `includeLeaves` | `true` | include primitive values and empty containers |
+| `includeArrays` | `true` | walk arrays and include numeric indexes |
+| `includeRoot` | `false` | include the root value as an empty path |
+| `maxDepth` | unlimited | stop traversal after this many path segments |
+| `pathStyle` | `'dot'` | return dot paths or bracket paths |
+| `separator` | `'.'` | separator used by dot paths |
+| `onCircular` | `'skip'` | mark circular values as leaves, or throw |
+| `isTraversable` | built-in | override which values should be walked into |
+
 ### `pathStyle`
 
 Use bracket paths when keys may contain dots or when the output should be compatible with JavaScript-like path notation.
@@ -153,6 +182,13 @@ getLeafPaths(
   { pathStyle: 'bracket' }
 );
 // ['users[0]["full.name"]']
+```
+
+Dot paths escape separators and backslashes:
+
+```ts
+getLeafPaths({ 'user.profile': { name: 'Ada' } });
+// ['user\\.profile.name']
 ```
 
 ### `maxDepth`
@@ -189,7 +225,7 @@ Use `{ onCircular: 'throw' }` when circular data should fail fast.
 
 ## Ecosystem recipes
 
-Use with `object-path-kit` to inspect a JSON object and then safely read values from the discovered paths:
+Use with `object-path-kit` to inspect a JSON object and then safely read values from the discovered paths. Bracket paths are the safest format when object keys may contain dots:
 
 ```ts
 import { getLeafPaths } from 'object-key-paths';
@@ -226,6 +262,7 @@ const markdown = arrayToMarkdownTable(getPathEntries(report), {
 - Arrays are traversed by numeric index unless `includeArrays` is disabled.
 - `Date`, `Map`, `Set`, functions and class instances are treated as leaf values by default.
 - Circular references are not followed.
+- This package discovers and formats paths; it does not parse paths or read values by path. Use `object-path-kit` for that.
 
 ## License
 
