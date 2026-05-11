@@ -92,12 +92,25 @@ describe('object-key-paths', () => {
 
   test('formats bracket paths with identifiers and quoted keys', () => {
     expect(formatBracketPath(['user', 'full.name', 0, 'city'])).toBe(
-      'user["full.name"][0]["city"]'
+      'user["full.name"][0].city'
     );
   });
 
   test('treats arrays as leaves when array traversal is disabled', () => {
     expect(getLeafPaths({ tags: ['admin'] }, { includeArrays: false })).toEqual(['tags']);
+  });
+
+  test('handles sparse arrays without generating undefined paths', () => {
+    const rows = ['first', , 'third'];
+
+    expect(getLeafPaths({ rows })).toEqual(['rows.0', 'rows.2']);
+  });
+
+  test('includes enumerable custom array keys', () => {
+    const rows: string[] & { meta?: string } = ['first'];
+    rows.meta = 'source';
+
+    expect(getLeafPaths({ rows })).toEqual(['rows.0', 'rows.meta']);
   });
 
   test('respects maxDepth', () => {
@@ -147,5 +160,12 @@ describe('object-key-paths', () => {
   test('validates maxDepth', () => {
     expect(() => getKeyPaths({}, { maxDepth: -1 })).toThrow('maxDepth');
     expect(() => getKeyPaths({}, { maxDepth: 1.5 })).toThrow('maxDepth');
+  });
+
+  test('validates runtime option values', () => {
+    expect(() => getKeyPaths({}, { pathStyle: 'slash' as never })).toThrow('pathStyle');
+    expect(() => getKeyPaths({}, { separator: '' })).toThrow('separator');
+    expect(() => getKeyPaths({}, { onCircular: 'keep' as never })).toThrow('onCircular');
+    expect(() => getKeyPaths({}, { isTraversable: true as never })).toThrow('isTraversable');
   });
 });

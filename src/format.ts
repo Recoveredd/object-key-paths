@@ -29,8 +29,8 @@ export function formatBracketPath(segments: readonly KeyPathSegment[]): string {
         return `[${segment}]`;
       }
 
-      if (index === 0 && isIdentifier(segment)) {
-        return segment;
+      if (isIdentifier(segment)) {
+        return index === 0 ? segment : `.${segment}`;
       }
 
       return `[${JSON.stringify(segment)}]`;

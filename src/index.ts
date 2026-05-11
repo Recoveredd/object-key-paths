@@ -99,6 +99,9 @@ function walk(
 
 function resolveOptions(options: KeyPathOptions): ResolvedKeyPathOptions {
   const maxDepth = options.maxDepth ?? Number.POSITIVE_INFINITY;
+  const pathStyle = options.pathStyle ?? 'dot';
+  const separator = options.separator ?? '.';
+  const onCircular = options.onCircular ?? 'skip';
 
   if (!Number.isInteger(maxDepth) && maxDepth !== Number.POSITIVE_INFINITY) {
     throw new TypeError('maxDepth must be an integer.');
@@ -108,15 +111,31 @@ function resolveOptions(options: KeyPathOptions): ResolvedKeyPathOptions {
     throw new RangeError('maxDepth must be greater than or equal to 0.');
   }
 
+  if (pathStyle !== 'dot' && pathStyle !== 'bracket') {
+    throw new TypeError('pathStyle must be "dot" or "bracket".');
+  }
+
+  if (typeof separator !== 'string' || separator.length === 0) {
+    throw new TypeError('separator must be a non-empty string.');
+  }
+
+  if (onCircular !== 'skip' && onCircular !== 'throw') {
+    throw new TypeError('onCircular must be "skip" or "throw".');
+  }
+
+  if (options.isTraversable !== undefined && typeof options.isTraversable !== 'function') {
+    throw new TypeError('isTraversable must be a function.');
+  }
+
   return {
     includeIntermediate: options.includeIntermediate ?? true,
     includeLeaves: options.includeLeaves ?? true,
     includeArrays: options.includeArrays ?? true,
     includeRoot: options.includeRoot ?? false,
     maxDepth,
-    pathStyle: options.pathStyle ?? 'dot',
-    separator: options.separator ?? '.',
-    onCircular: options.onCircular ?? 'skip',
+    pathStyle,
+    separator,
+    onCircular,
     ...(options.isTraversable ? { isTraversable: options.isTraversable } : {})
   };
 }
@@ -132,7 +151,7 @@ function getChildKeys(
   }
 
   if (Array.isArray(value)) {
-    return value.map((_, index) => index);
+    return Object.keys(value).map((key) => (isArrayIndexKey(key) ? Number(key) : key));
   }
 
   return Object.keys(value as Record<string, unknown>);
@@ -180,4 +199,13 @@ function isPlainObject(value: unknown): value is Record<string, unknown> {
 
   const prototype = Object.getPrototypeOf(value);
   return prototype === Object.prototype || prototype === null;
+}
+
+function isArrayIndexKey(value: string): boolean {
+  if (value === '') {
+    return false;
+  }
+
+  const index = Number(value);
+  return Number.isSafeInteger(index) && index >= 0 && String(index) === value;
 }
