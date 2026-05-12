@@ -6,7 +6,7 @@ List nested key paths from JavaScript objects and arrays.
 
 `object-key-paths` is a small TypeScript utility for JSON tooling, admin dashboards, docs generators, table builders, import/export mapping and schema inspection. It is a modern, typed alternative to older deep key listing packages.
 
-Demo: https://kits.wasta-wocket.fr/object-key-paths
+Demo: https://packages.wasta-wocket.fr/object-key-paths
 
 Use it when you need to inspect an unknown object shape, build a field picker, generate table columns, document API payloads or collect all leaf values from a JSON-like object.
 
