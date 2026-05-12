@@ -256,6 +256,20 @@ const markdown = arrayToMarkdownTable(getPathEntries(report), {
 });
 ```
 
+Use with `json-csv-kit` when discovered leaf paths should become a CSV export:
+
+```ts
+import { getLeafPaths } from 'object-key-paths';
+import { jsonToCsv } from 'json-csv-kit';
+
+const columns = getLeafPaths(report).map((path) => ({
+  key: path,
+  header: path
+}));
+
+const csv = jsonToCsv([report], { columns });
+```
+
 ## Notes
 
 - Only own enumerable string keys are traversed.
