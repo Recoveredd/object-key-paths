@@ -46,6 +46,11 @@ export interface KeyPathOptions {
   maxDepth?: number;
 
   /**
+   * Maximum number of entries to return.
+   */
+  limit?: number;
+
+  /**
    * String formatting for returned paths.
    *
    * @default 'dot'
@@ -87,6 +92,7 @@ export interface ResolvedKeyPathOptions {
   includeArrays: boolean;
   includeRoot: boolean;
   maxDepth: number;
+  limit: number;
   pathStyle: PathStyle;
   separator: string;
   onCircular: CircularHandling;

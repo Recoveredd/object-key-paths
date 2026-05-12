@@ -117,6 +117,11 @@ describe('object-key-paths', () => {
     expect(getKeyPaths({ a: { b: { c: 1 } } }, { maxDepth: 2 })).toEqual(['a', 'a.b']);
   });
 
+  test('respects an entry limit', () => {
+    expect(getKeyPaths({ a: 1, b: 2, c: 3 }, { limit: 2 })).toEqual(['a', 'b']);
+    expect(getPathEntries({ a: { b: 1 } }, { includeRoot: true, limit: 0 })).toEqual([]);
+  });
+
   test('can include the root entry', () => {
     expect(getPathEntries({ a: 1 }, { includeRoot: true })[0]).toMatchObject({
       path: '',
@@ -163,6 +168,8 @@ describe('object-key-paths', () => {
   });
 
   test('validates runtime option values', () => {
+    expect(() => getKeyPaths({}, { limit: -1 })).toThrow('limit');
+    expect(() => getKeyPaths({}, { limit: 1.5 })).toThrow('limit');
     expect(() => getKeyPaths({}, { pathStyle: 'slash' as never })).toThrow('pathStyle');
     expect(() => getKeyPaths({}, { separator: '' })).toThrow('separator');
     expect(() => getKeyPaths({}, { onCircular: 'keep' as never })).toThrow('onCircular');

@@ -60,6 +60,10 @@ function walk(
   options: ResolvedKeyPathOptions,
   entries: KeyPathEntry[]
 ): void {
+  if (entries.length >= options.limit) {
+    return;
+  }
+
   const depth = path.length;
   const circular = isCircular(value, ancestors);
 
@@ -83,6 +87,10 @@ function walk(
       isLeaf,
       isCircular: circular
     });
+
+    if (entries.length >= options.limit) {
+      return;
+    }
   }
 
   if (circular || isAtMaxDepth || childKeys.length === 0) {
@@ -94,11 +102,16 @@ function walk(
   for (const key of childKeys) {
     const child = readChild(value, key);
     walk(child, [...path, key], value, nextAncestors, options, entries);
+
+    if (entries.length >= options.limit) {
+      break;
+    }
   }
 }
 
 function resolveOptions(options: KeyPathOptions): ResolvedKeyPathOptions {
   const maxDepth = options.maxDepth ?? Number.POSITIVE_INFINITY;
+  const limit = options.limit ?? Number.POSITIVE_INFINITY;
   const pathStyle = options.pathStyle ?? 'dot';
   const separator = options.separator ?? '.';
   const onCircular = options.onCircular ?? 'skip';
@@ -109,6 +122,14 @@ function resolveOptions(options: KeyPathOptions): ResolvedKeyPathOptions {
 
   if (maxDepth < 0) {
     throw new RangeError('maxDepth must be greater than or equal to 0.');
+  }
+
+  if (!Number.isInteger(limit) && limit !== Number.POSITIVE_INFINITY) {
+    throw new TypeError('limit must be an integer.');
+  }
+
+  if (limit < 0) {
+    throw new RangeError('limit must be greater than or equal to 0.');
   }
 
   if (pathStyle !== 'dot' && pathStyle !== 'bracket') {
@@ -133,6 +154,7 @@ function resolveOptions(options: KeyPathOptions): ResolvedKeyPathOptions {
     includeArrays: options.includeArrays ?? true,
     includeRoot: options.includeRoot ?? false,
     maxDepth,
+    limit,
     pathStyle,
     separator,
     onCircular,

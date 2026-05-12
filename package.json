@@ -1,6 +1,6 @@
 {
   "name": "object-key-paths",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "List nested key paths from JavaScript objects and arrays.",
   "type": "module",
   "sideEffects": false,

@@ -153,6 +153,7 @@ interface KeyPathOptions {
   includeArrays?: boolean;
   includeRoot?: boolean;
   maxDepth?: number;
+  limit?: number;
   pathStyle?: 'dot' | 'bracket';
   separator?: string;
   onCircular?: 'skip' | 'throw';
@@ -167,6 +168,7 @@ interface KeyPathOptions {
 | `includeArrays` | `true` | walk arrays and include numeric indexes |
 | `includeRoot` | `false` | include the root value as an empty path |
 | `maxDepth` | unlimited | stop traversal after this many path segments |
+| `limit` | unlimited | stop after this many returned entries |
 | `pathStyle` | `'dot'` | return dot paths or bracket paths |
 | `separator` | `'.'` | separator used by dot paths |
 | `onCircular` | `'skip'` | mark circular values as leaves, or throw |
@@ -200,6 +202,14 @@ Stop traversal after a fixed number of path segments.
 ```ts
 getKeyPaths({ a: { b: { c: 1 } } }, { maxDepth: 2 });
 // ['a', 'a.b']
+```
+
+### `limit`
+
+Keep exploratory scans bounded when payloads are very large:
+
+```ts
+getKeyPaths(largePayload, { limit: 100 });
 ```
 
 ### `includeArrays`
