@@ -1,12 +1,14 @@
 # object-key-paths
 
+[![npm version](https://img.shields.io/npm/v/object-key-paths.svg)](https://www.npmjs.com/package/object-key-paths)
+[![License: MPL-2.0](https://img.shields.io/badge/license-MPL--2.0-blue.svg)](LICENSE)
 [![CI](https://github.com/Recoveredd/object-key-paths/actions/workflows/ci.yml/badge.svg)](https://github.com/Recoveredd/object-key-paths/actions/workflows/ci.yml)
 
 List nested key paths from JavaScript objects and arrays.
 
 `object-key-paths` is a small TypeScript utility for JSON tooling, admin dashboards, docs generators, table builders, import/export mapping and schema inspection. It is a modern, typed alternative to older deep key listing packages.
 
-Demo: [packages.wasta-wocket.fr/object-key-paths/](https://packages.wasta-wocket.fr/object-key-paths/)
+Links: [Demo](https://packages.wasta-wocket.fr/object-key-paths/) · [npm](https://www.npmjs.com/package/object-key-paths) · [GitHub](https://github.com/Recoveredd/object-key-paths)
 
 Use it when you need to inspect an unknown object shape, build a field picker, generate table columns, document API payloads or collect all leaf values from a JSON-like object.
 
