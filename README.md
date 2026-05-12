@@ -282,4 +282,4 @@ const csv = jsonToCsv([report], { columns });
 
 ## License
 
-MIT
+MPL-2.0
