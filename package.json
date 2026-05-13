@@ -2,6 +2,16 @@
   "name": "object-key-paths",
   "version": "0.1.1",
   "description": "List nested key paths from JavaScript objects and arrays.",
+  "keywords": [
+    "object-paths",
+    "deep-keys",
+    "nested-data",
+    "schema",
+    "json",
+    "typescript",
+    "browser",
+    "developer-tools"
+  ],
   "type": "module",
   "sideEffects": false,
   "license": "MPL-2.0",
@@ -14,15 +24,6 @@
     "url": "https://github.com/Recoveredd/object-key-paths/issues"
   },
   "homepage": "https://github.com/Recoveredd/object-key-paths#readme",
-  "keywords": [
-    "object",
-    "keys",
-    "paths",
-    "deep-keys",
-    "nested",
-    "json",
-    "typescript"
-  ],
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
